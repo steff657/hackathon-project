@@ -55,6 +55,7 @@ body {
   grid-template-columns: repeat(12, 30px);
   grid-template-rows: repeat(12, 30px);
   gap: 3px;
+  margin-bottom: 15px; /* Added spacing between grid and status message */
 }
 
 /* Individual grid tiles */
@@ -127,4 +128,9 @@ body {
 .settings-drawer {
     margin-top: 20px;
     width: 280px;
+}
+.setting-group {
+    margin-bottom: 10px;
+    display: flex;
+    flex-direction: column;
 }
