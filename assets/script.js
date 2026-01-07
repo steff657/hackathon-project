@@ -11,11 +11,13 @@ const CONFIG = {
 // ===============================
 const grid = document.getElementById("grid");
 const startBtn = document.getElementById("start-btn");
-const resetBtn = document.getElementById("reset-btn"); // Reference for Reset Button
+const resetBtn = document.getElementById("reset-btn");
 const statusMsg = document.getElementById("status-message");
 const modal = document.getElementById("instructions-modal");
 const instBtn = document.getElementById("instructions-btn");
 const closeBtn = document.querySelector(".close-btn");
+const lengthInput = document.getElementById("length");
+const diffVal = document.getElementById("diff-val");
 
 // ===============================
 // Game state variables
@@ -61,8 +63,9 @@ function createGrid() {
 function generatePath(length = CONFIG.DEFAULT_LENGTH) {
   const path = [];
 
-  // Start from a random cell within the grid
-  let current = 137;
+  // Start from a specific cell (or randomized)
+  // 137 is row 11, col 5 in a 12x12 grid
+  let current = 137; 
   path.push(current);
 
   // Continue until desired path length is reached
@@ -71,6 +74,7 @@ function generatePath(length = CONFIG.DEFAULT_LENGTH) {
     const neighbors = getValidNeighbors(current);
 
     // Randomly select one neighboring cell
+    // Improvement: Simple check to prevent immediate backtracking could go here
     const next = neighbors[Math.floor(Math.random() * neighbors.length)];
 
     path.push(next);
@@ -120,6 +124,9 @@ function stopTimer() {
 // Game start logic
 // ===============================
 async function startGame() {
+  // Prevent starting if animation is currently playing
+  if(isShowingPath) return;
+
   // Reset user progress and timer
   stopTimer();
   userPath = [];
@@ -130,8 +137,8 @@ async function startGame() {
   tiles.forEach((t) => t.classList.remove("active", "wrong"));
 
   // Get desired path length from user input (fallback to default)
-  const lengthInput = document.getElementById("length").value;
-  gamePath = generatePath(parseInt(lengthInput) || CONFIG.DEFAULT_LENGTH);
+  const len = parseInt(lengthInput.value) || CONFIG.DEFAULT_LENGTH;
+  gamePath = generatePath(len);
 
   // Show the generated path to the user
   await showPathToMemorise();
@@ -147,16 +154,15 @@ async function showPathToMemorise() {
 
   // Highlight each tile in sequence with a staggered delay
   for (let i = 0; i < gamePath.length; i++) {
-    setTimeout(() => {
-      tiles[gamePath[i]].classList.add("active");
-    }, i * 100);
+    // Using promise to wait for animation timing
+    await new Promise(resolve => setTimeout(() => {
+        tiles[gamePath[i]].classList.add("active");
+        resolve();
+    }, 200)); // Adjusted speed slightly for better visibility
   }
 
-  // Total time = animation duration + fixed display time
-  const totalWaitTime = gamePath.length * 100 + CONFIG.DISPLAY_TIME;
-
-  // Pause execution until the path display finishes
-  await new Promise((resolve) => setTimeout(resolve, totalWaitTime));
+  // Allow path to remain visible for the configured time
+  await new Promise((resolve) => setTimeout(resolve, CONFIG.DISPLAY_TIME));
 
   // Remove all highlights after display ends (Reset to neutral state)
   gamePath.forEach((index) => tiles[index].classList.remove("active"));
@@ -188,15 +194,15 @@ function handleTileClick(index) {
       stopTimer();
       statusMsg.innerText = `Perfect! Finished in ${secondsElapsed} seconds.`;
       isPlayerTurn = false;
-      grid.classList.add("disabled"); // Disable clicking once complete
+      // Optional: grid.classList.add("disabled");
     }
   } else {
     // Incorrect selection
     stopTimer();
     tiles[index].classList.add("wrong");
-    statusMsg.innerText = "Incorrect! Press 'Reset Attempt' or 'Start Game'.";
+    statusMsg.innerText = "Incorrect! Press 'Reset Attempt' to try again.";
     isPlayerTurn = false;
-    grid.classList.add("disabled"); // Disable clicking once attempt is complete
+    // Optional: grid.classList.add("disabled");
   }
 }
 
@@ -204,6 +210,9 @@ function handleTileClick(index) {
 // Reset Attempt Logic
 // ===============================
 function resetAttempt() {
+  // Only allow reset if the game has actually started
+  if (gamePath.length === 0) return;
+
   // Player can reset the current attempt without restarting the entire game
   userPath = [];
   isPlayerTurn = true;
@@ -218,7 +227,7 @@ function resetAttempt() {
 }
 
 // ===============================
-// Modal Logic
+// Modal Logic & UI Listeners
 // ===============================
 instBtn.onclick = () => (modal.style.display = "block");
 closeBtn.onclick = () => (modal.style.display = "none");
@@ -226,9 +235,14 @@ window.onclick = (event) => {
   if (event.target == modal) modal.style.display = "none";
 };
 
+// Update the path length number when slider moves
+lengthInput.addEventListener('input', (e) => {
+    diffVal.textContent = e.target.value;
+});
+
 // ===============================
 // Initialization
 // ===============================
 startBtn.addEventListener("click", startGame);
-resetBtn.addEventListener("click", resetAttempt); // Listener for Reset Attempt
+resetBtn.addEventListener("click", resetAttempt);
 createGrid();
