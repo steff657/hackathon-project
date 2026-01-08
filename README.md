@@ -132,7 +132,6 @@ Desktop
 
 Tested layout scaling, button alignment, and grid usability on small and large screens using browser developer tools.
 
-
 ### Browser Compatibility
 
 This project was tested for cross-browser compatibility using automated analysis tools and manual checks.
@@ -172,9 +171,11 @@ No critical, major, or minor browser compatibility issues were detected across t
 - **Countdown timer didn’t reset between games**  
   Fixed by clearing the timer display when starting or stopping a game.
 
-- **Pathfinding occasionally produced invalid or confusing paths**  
+- **Pathfinding occasionally produced overlapping paths**  
   Fixed by tightening neighbour selection logic to ensure only valid adjacent cells were used.
 
+- **Pathfinding occasionally circled itself in, leaving no valid adjacent cells for the next cell in the path**
+  Fixed by making the path generating function loop and start over if ever there were no valid neighbors at any point in the path generation.
 
 ## Deployment
 
