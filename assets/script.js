@@ -30,10 +30,6 @@ let timeRemaining = 0;
 let timerInterval = null;
 let isTimedMode = false;
 
-/**
- * Fixes the "Functions declared within loops" warning by 
- * providing a static scope for the event listeners.
- */
 function attachTileListeners(tile, index) {
     tile.addEventListener("click", () => handleTileClick(index));
 
@@ -160,7 +156,6 @@ function handleTimeout() {
     tiles.forEach(t => t.classList.add("disabled")); 
 }
 
-// Helper to avoid function declarations inside loops referencing outer variables
 function activateTile(index) {
     return new Promise((resolve) => {
         setTimeout(() => {
