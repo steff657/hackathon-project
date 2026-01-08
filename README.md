@@ -6,7 +6,7 @@
 
 This project is a memory game where the player observes a highlighted path on a grid, memorises it, and then attempts to accurately reproduce the sequence. The game features adjustable path length settings, a timer to track completion speed, and an optional countdown toggle for time-limited challenges.
 
-(Add "Am I responsive?" screenshot here)
+![Am I Responsive Screenshot](assets/images/reponsive_test.webp)
 
 ## Design & Planning
 
@@ -98,6 +98,9 @@ Desktop
 
 ### Responsiveness
 
+Tested layout scaling, button alignment, and grid usability on small and large screens using browser developer tools.
+
+
 ### Browser Compatibility
 
 This project was tested for cross-browser compatibility using automated analysis tools and manual checks.
@@ -133,6 +136,13 @@ No critical, major, or minor browser compatibility issues were detected across t
 ![screenshot of CSS validation passing](assets/images/jshint.png)
 
 ## Bugs
+
+- **Countdown timer didn’t reset between games**  
+  Fixed by clearing the timer display when starting or stopping a game.
+
+- **Pathfinding occasionally produced invalid or confusing paths**  
+  Fixed by tightening neighbour selection logic to ensure only valid adjacent cells were used.
+
 
 ## Deployment
 
@@ -222,8 +232,6 @@ If you want to download the project to your local machine:
 - **Browser Compatibility**  
   https://www.powermapper.com/
 
-
-  
 ### Typography
 
 - Fonts provided by **Google Fonts**  
